@@ -1,0 +1,63 @@
+group 'co.com.prueba.certificacion'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+
+        dependencies {
+            classpath "net.serenity-bdd:serenity-gradle-plugin:2.1.4"
+            classpath "net.serenity-bdd:serenity-single-page-report:2.1.4"
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+serenity {
+    reports = ["index"]
+}
+
+ext {
+    serenityVersion = "2.0.49"
+    serenityCucumberVersion = "1.9.31"
+}
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+    implementation 'com.codoid.products:fillo:1.21'
+    implementation "net.serenity-bdd:serenity-ensure:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-reports:${serenityVersion}"
+    testImplementation 'junit:junit:4.12'
+    testImplementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityVersion}"
+    testImplementation 'org.assertj:assertj-core:3.8.0'
+    testImplementation 'org.slf4j:slf4j-simple:1.7.21'
+}
+
+gradle.startParameter.continueOnFailure = true
+
+test {
+    systemProperties System.getProperties()
+    systemProperty "file.encoding", "UTF-8"
+    testLogging.showStandardStreams = true
+}
+
+test.finalizedBy(aggregate, reports)
